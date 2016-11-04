@@ -31,13 +31,20 @@ public class Board {
 
 	private void setFieldsColors() {
 		Color actualColor = Color.WHITE;
-		//TODO: finish that
+		for (int i = 0; i < boardFields.length; i++) {
+			initRow(actualColor, boardFields[i]);
+			actualColor = actualColor.getOpposite();
+		}
+	}
+
+	private void initRow(Color actualColor, Field[] boardField) {
+		for (int j = 0; j < boardField.length; j++) {
+			boardField[j] = new Field(actualColor);
+			actualColor = actualColor.getOpposite();
+		}
 	}
 
 	private void clearBoard() {
-		for (Field[] boardField : boardFields) {
-
-		}
 		Arrays.fill(boardFields, null);
 	}
 
