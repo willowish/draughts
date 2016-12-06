@@ -1,6 +1,8 @@
 package model.ai.nn;
 
-public class NeuralNetwork {
+import model.genetics.BiasedWighted;
+
+public class NeuralNetwork implements BiasedWighted {
 
 	int nodesInInputLayer = 32;
 	int nodesInFirstLayer = 40;
@@ -77,6 +79,34 @@ public class NeuralNetwork {
 		// outputNode += outputBias;
 		outputNode = tanh(outputNode);
 		return outputNode;
+	}
+
+	@Override
+	public double[] getWeights() {
+		// TODO is it correct?
+		double[] weights = new double[inputLayer.length + firstLayer.length + secondLayer.length];
+		System.arraycopy(inputLayer, 0, weights, 0, inputLayer.length);
+		System.arraycopy(firstLayer, 0, weights, inputLayer.length, firstLayer.length);
+		System.arraycopy(secondLayer, 0, weights, firstLayer.length, secondLayer.length);
+		return weights;
+	}
+
+	@Override
+	public double[] getBiases() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setWeights(double[] weights) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setBiases(double[] biases) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

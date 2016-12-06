@@ -9,8 +9,8 @@ public class Dna {
 		weights = new double[weightsCount];
 	}
 
-	public Dna(Network network) {
-		biases = network.getBiases();
-		weights = network.getWeights();
+	public Dna(BiasedWighted biasedWighted) {
+		biases = biasedWighted.getBiases();
+		weights = biasedWighted.getWeights();
 	}
 }
