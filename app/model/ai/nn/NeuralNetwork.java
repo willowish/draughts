@@ -43,6 +43,7 @@ public class NeuralNetwork implements BiasedWighted {
 		}
 	}
 
+	// TODO why not Math.tanh(x)? ew. if(x>10)return +-1 else Math.tanh
 	static double tanh(double x) {
 		double a = Math.exp(x);
 		double b = Math.exp(-x);
@@ -99,8 +100,10 @@ public class NeuralNetwork implements BiasedWighted {
 
 	@Override
 	public void setWeights(double[] weights) {
-		// TODO Auto-generated method stub
-
+		// TODO is it correct?
+		System.arraycopy(weights, 0, inputLayer, 0, inputLayer.length);
+		System.arraycopy(weights, inputLayer.length, firstLayer, 0, firstLayer.length);
+		System.arraycopy(weights, firstLayer.length, secondLayer, 0, secondLayer.length);
 	}
 
 	@Override

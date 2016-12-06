@@ -3,6 +3,7 @@ package model.game.entities;
 public class Field {
 	private Color color;
 
+	@SuppressWarnings("unused")
 	private Piece piece;
 
 	public Field(Color color) {
@@ -17,7 +18,6 @@ public class Field {
 	public void setPiece(Piece piece) {
 		this.piece = piece;
 	}
-
 
 	public Color getColor() {
 		return color;

@@ -26,8 +26,7 @@ public class CrossOverPerformer {
 		for (int i = 0; i < count; i++) {
 			BiasedWighted[] networks = new BiasedWighted[] { getRandomSourceNetwork(), getRandomSourceNetwork() };
 
-			Dna[] dnaCodes = new Dna[] { new Dna(networks[0]), new Dna(networks[1]) };
-			Dna newDna = createNewDna(dnaCodes);
+			Dna newDna = crossOverNewDna(new Dna(networks[0]), new Dna(networks[1]));
 
 			BiasedWighted newNetwork = convertDnaToNetwork(newDna);
 			newPopulation.add(newNetwork);
@@ -42,15 +41,16 @@ public class CrossOverPerformer {
 		return newNetwork;
 	}
 
-	private Dna createNewDna(Dna[] dnaCodes) {
-		int weightCount = dnaCodes[0].weights.length;
-		int biasCount = dnaCodes[0].biases.length;
+	private Dna crossOverNewDna(Dna firstDna, Dna secondDna) {
+		int weightCount = firstDna.weights.length;
+		int biasCount = firstDna.biases.length;
 		Dna newDna = new Dna(weightCount, biasCount);
+
 		for (int weightIdx = 0; weightIdx < weightCount; weightIdx++) {
-			newDna.weights[weightIdx] = (dnaCodes[0].weights[weightIdx] + dnaCodes[1].weights[weightIdx]) / 2;
+			newDna.weights[weightIdx] = (firstDna.weights[weightIdx] + secondDna.weights[weightIdx]) / 2;
 		}
 		for (int biasIdx = 0; biasIdx < biasCount; biasIdx++) {
-			newDna.biases[biasIdx] = (dnaCodes[0].biases[biasIdx] + dnaCodes[1].biases[biasIdx]) / 2;
+			newDna.biases[biasIdx] = (firstDna.biases[biasIdx] + secondDna.biases[biasIdx]) / 2;
 		}
 		return newDna;
 	}
