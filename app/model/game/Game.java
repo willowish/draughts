@@ -16,7 +16,6 @@ public class Game {
 	}
 
 	public void initGame() {
-		board.setPiecesToDefaultFields();
 	}
 
 }
