@@ -1,7 +1,7 @@
 package model.game.entities;
 
 public class Field {
-	private Color color;
+	private final Color color;
 
 	@SuppressWarnings("unused")
 	private Piece piece;
