@@ -1,6 +1,5 @@
 package model.game.entities;
 
-
 public enum Color {
 	WHITE, BLACK;
 

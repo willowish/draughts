@@ -1,12 +1,14 @@
 package model.ai.nn;
 
-import model.genetics.BiasedWighted;
+import static java.lang.Math.tanh;
 
-public class NeuralNetwork implements BiasedWighted {
+import model.genetics.BiasedWeighted;
 
-	int nodesInInputLayer = 32;
-	int nodesInFirstLayer = 40;
-	int nodesInSecondLayer = 10;
+public class NeuralNetwork implements BiasedWeighted {
+
+	public static final int nodesInInputLayer = 32;
+	public static final int nodesInFirstLayer = 40;
+	public static final int nodesInSecondLayer = 10;
 
 	double[] inputLayer = new double[nodesInInputLayer];
 	double[] firstLayer = new double[nodesInFirstLayer];
@@ -43,18 +45,6 @@ public class NeuralNetwork implements BiasedWighted {
 		}
 	}
 
-	// TODO why not Math.tanh(x)? ew. if(x>10)return +-1 else Math.tanh
-	static double tanh(double x) {
-		double a = Math.exp(x);
-		double b = Math.exp(-x);
-		double result = (a - b) / (a + b);
-		if (result > 1)
-			result = 1;
-		else if (result < -1)
-			result = -1;
-		return result;
-	}
-
 	public double compute(double[] input) {
 		if (input.length != nodesInInputLayer) {
 			System.out.println("Niewlasciwy argument");
@@ -84,31 +74,78 @@ public class NeuralNetwork implements BiasedWighted {
 
 	@Override
 	public double[] getWeights() {
-		// TODO is it correct?
-		double[] weights = new double[inputLayer.length + firstLayer.length + secondLayer.length];
-		System.arraycopy(inputLayer, 0, weights, 0, inputLayer.length);
-		System.arraycopy(firstLayer, 0, weights, inputLayer.length, firstLayer.length);
-		System.arraycopy(secondLayer, 0, weights, firstLayer.length, secondLayer.length);
+		double[] weights = new double[nodesInInputLayer * nodesInFirstLayer + nodesInFirstLayer * nodesInSecondLayer
+				+ nodesInSecondLayer];
+
+		int idx = 0;
+		for (int i = 0; i < nodesInInputLayer; i++) {
+			for (int j = 0; j < nodesInFirstLayer; j++) {
+				weights[idx++] = ifWeights[i][j];
+			}
+		}
+		for (int i = 0; i < nodesInFirstLayer; i++) {
+			for (int j = 0; j < nodesInSecondLayer; j++) {
+				weights[idx++] = fsWeights[i][j];
+			}
+		}
+		for (int i = 0; i < nodesInSecondLayer; i++) {
+			weights[idx++] = soWeights[i];
+		}
+
 		return weights;
 	}
 
 	@Override
 	public double[] getBiases() {
-		// TODO Auto-generated method stub
-		return null;
+		double[] biases = new double[nodesInFirstLayer + nodesInSecondLayer + 1];
+
+		int idx = 0;
+		for (int i = 0; i < fBiases.length; i++) {
+			biases[idx++] = fBiases[i];
+		}
+		for (int i = 0; i < sBiases.length; i++) {
+			biases[idx++] = sBiases[i];
+		}
+		biases[idx++] = outputBias;
+		return biases;
 	}
 
 	@Override
 	public void setWeights(double[] weights) {
-		// TODO is it correct?
-		System.arraycopy(weights, 0, inputLayer, 0, inputLayer.length);
-		System.arraycopy(weights, inputLayer.length, firstLayer, 0, firstLayer.length);
-		System.arraycopy(weights, firstLayer.length, secondLayer, 0, secondLayer.length);
+		if (weights.length != nodesInInputLayer * nodesInFirstLayer + nodesInFirstLayer * nodesInSecondLayer
+				+ nodesInSecondLayer) {
+			throw new ArrayIndexOutOfBoundsException("Weights array length too small");
+		}
+		int idx = 0;
+		for (int i = 0; i < nodesInInputLayer; i++) {
+			for (int j = 0; j < nodesInFirstLayer; j++) {
+				ifWeights[i][j] = weights[idx++];
+			}
+		}
+		for (int i = 0; i < nodesInFirstLayer; i++) {
+			for (int j = 0; j < nodesInSecondLayer; j++) {
+				fsWeights[i][j] = weights[idx++];
+			}
+		}
+		for (int i = 0; i < nodesInSecondLayer; i++) {
+			soWeights[i] = weights[idx++];
+		}
 	}
 
 	@Override
 	public void setBiases(double[] biases) {
-		// TODO Auto-generated method stub
+		if (biases.length != nodesInFirstLayer + nodesInSecondLayer + 1) {
+			throw new ArrayIndexOutOfBoundsException("Biases array length too small");
+		}
+
+		int idx = 0;
+		for (int i = 0; i < fBiases.length; i++) {
+			fBiases[i] = biases[idx++];
+		}
+		for (int i = 0; i < sBiases.length; i++) {
+			sBiases[i] = biases[idx++];
+		}
+		outputBias = biases[idx++];
 
 	}
 

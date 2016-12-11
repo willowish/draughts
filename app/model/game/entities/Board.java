@@ -2,8 +2,7 @@ package model.game.entities;
 
 public class Board {
 
-
-	private final int DEFAULT_BOARD_SIZE = 10;
+	private final int DEFAULT_BOARD_SIZE = 8;
 	/**
 	 * [0][0] is top left corner of the board
 	 **/
@@ -22,7 +21,6 @@ public class Board {
 		setFieldsColors();
 		setPiecesToDefaultFields();
 	}
-
 
 	private void setFieldsColors() {
 		Color actualColor = Color.WHITE;
@@ -71,5 +69,7 @@ public class Board {
 		}
 	}
 
-
+	public Field[][] getBoardFields() {
+		return boardFields;
+	}
 }

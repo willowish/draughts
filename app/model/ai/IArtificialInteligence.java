@@ -7,5 +7,5 @@ public interface IArtificialInteligence {
 
 	public Move makeMove(Board board);
 
-	public int evaluate(Board board);
+	public double evaluate(Board board);
 }

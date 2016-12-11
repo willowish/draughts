@@ -9,7 +9,7 @@ public class Dna {
 		weights = new double[weightsCount];
 	}
 
-	public Dna(BiasedWighted biasedWighted) {
+	public Dna(BiasedWeighted biasedWighted) {
 		biases = biasedWighted.getBiases();
 		weights = biasedWighted.getWeights();
 	}

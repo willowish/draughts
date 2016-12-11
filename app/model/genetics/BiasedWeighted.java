@@ -1,6 +1,6 @@
 package model.genetics;
 
-public interface BiasedWighted {
+public interface BiasedWeighted {
 	double[] getWeights();
 
 	double[] getBiases();

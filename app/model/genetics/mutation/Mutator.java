@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.DoubleStream;
 
-import model.genetics.BiasedWighted;
+import model.genetics.BiasedWeighted;
 import model.genetics.Dna;
+import model.genetics.NeuronParametersGenerator;
 
 public class Mutator {
 
@@ -17,21 +18,21 @@ public class Mutator {
 		random = new Random();
 	}
 
-	public List<BiasedWighted> mutate(List<BiasedWighted> networks) {
+	public List<BiasedWeighted> mutate(List<BiasedWeighted> networks) {
 		for (int i = 0; i < networks.size(); i++) {
 			networks.set(i, mutate(networks.get(i)));
 		}
 		return networks;
 	}
 
-	public BiasedWighted[] mutate(BiasedWighted... networks) {
+	public BiasedWeighted[] mutate(BiasedWeighted... networks) {
 		for (int i = 0; i < networks.length; i++) {
 			networks[i] = mutate(networks[i]);
 		}
 		return networks;
 	}
 
-	public BiasedWighted mutate(BiasedWighted network) {
+	public BiasedWeighted mutate(BiasedWeighted network) {
 		Dna dna = new Dna(network);
 		dna.biases = DoubleStream.of(dna.biases).map(bias -> getNewBias(bias)).toArray();
 		dna.weights = DoubleStream.of(dna.weights).map(weight -> getNewWeight(weight)).toArray();
