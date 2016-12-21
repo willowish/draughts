@@ -11,7 +11,11 @@ public class Board {
 	public Field[][] fields;
 
 	public Board() {
-		this.fields = new Field[DEFAULT_BOARD_SIZE][DEFAULT_BOARD_SIZE];
+		this(DEFAULT_BOARD_SIZE);
+	}
+
+	public Board(int boardSize) {
+		this.fields = new Field[boardSize][boardSize];
 		setFieldsColors();
 		setPiecesToDefaultFields();
 	}
@@ -62,7 +66,7 @@ public class Board {
 
 	private void initRow(Color actualColor, Field[] boardField) {
 		for (int j = 0; j < boardField.length; j++) {
-			boardField[j] = new Field();
+			boardField[j] = new Field(actualColor);
 			actualColor = actualColor.getOpposite();
 		}
 	}

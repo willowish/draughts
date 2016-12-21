@@ -13,12 +13,13 @@ public class Game {
 		board = new Board();
 	}
 
-	public Board getBoard() {
-		return board;
-	}
 
 	public void setBoard(Board board) {
 		this.board = board;
+	}
+
+	public Board getBoard() {
+		return board;
 	}
 
 	public static void main(String[] args) {
@@ -53,4 +54,6 @@ public class Game {
 		System.out.println();
 		System.out.println();
 	}
+
+
 }
