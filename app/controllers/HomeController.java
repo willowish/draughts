@@ -10,6 +10,11 @@ import views.html.*;
  */
 public class HomeController extends Controller {
 
+    public Result getBoard() {
+//        TODO: implement
+        return Results.TODO;
+    }
+
     /**
      * An action that renders an HTML page with a welcome message.
      * The configuration in the <code>routes</code> file means that

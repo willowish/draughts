@@ -9,7 +9,7 @@
   },
   "scripts": {
     "prebuild": "bower install",
-    "start": "webpack --colors --progress --watch --config ./frontend/webpack/config"
+    "start": "set NODE_ENV=development&& set NODE_MINI=mini&& webpack --colors --progress --watch --config ./frontend/webpack/config"
   },
   "dependencies": {
     "angular": "1.4.1",

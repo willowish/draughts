@@ -1,3 +1,6 @@
 import angular from "angular";
-
-export default angular.module('app', [])
+import ngResource from 'angular-resource';
+import resourcesFactory from './common/resourcesFactory'
+export default angular.module('app', [
+    resourcesFactory.name
+])
