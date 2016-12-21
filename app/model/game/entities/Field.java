@@ -1,25 +1,13 @@
 package model.game.entities;
 
 public class Field {
-	private final Color color;
+	public Piece piece;
 
-	@SuppressWarnings("unused")
-	private Piece piece;
-
-	public Field(Color color) {
-		this.color = color;
-	}
-
-	public Field(Color color, Piece piece) {
-		this.color = color;
-		this.piece = piece;
-	}
-
-	public void setPiece(Piece piece) {
-		this.piece = piece;
-	}
-
-	public Color getColor() {
-		return color;
+	@Override
+	public String toString() {
+		if (piece == null) {
+			return "\t|";
+		}
+		return piece.toString() + "\t|";
 	}
 }

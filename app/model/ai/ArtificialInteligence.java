@@ -31,14 +31,13 @@ public class ArtificialInteligence implements IArtificialInteligence {
 
 	@Override
 	public double evaluate(Board board) {
-		// TODO check correctness
 		double[] input = new double[nodesInInputLayer];
 		int idx = 0;
 
-		Field[][] fields = board.getBoardFields();
+		Field[][] fields = board.getFields();
 		for (int i = 0; i < fields.length; i++) {
 			for (int j = 0; j < fields[i].length; j += 2) {
-				input[idx++] = fields[i][j].getColor().ordinal() + fields[i][j + 1].getColor().ordinal();
+				input[idx++] = fields[i][j].piece.code() + fields[i][j].piece.code();
 			}
 		}
 		return nn.compute(input);
