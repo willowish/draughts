@@ -2,14 +2,14 @@ package model.game.entities;
 
 public class Board {
 
-	private final int DEFAULT_BOARD_SIZE = 8;
+	private static final int DEFAULT_BOARD_SIZE = 8;
 	/**
 	 * [0][0] is top left corner of the board
 	 **/
 	private Field[][] boardFields;
 
 	public Board() {
-		new Board(DEFAULT_BOARD_SIZE);
+		this(DEFAULT_BOARD_SIZE);
 	}
 
 	public Board(int boardSize) {
@@ -35,7 +35,7 @@ public class Board {
 		int startPositionY = 0; // we start at [0][1]
 		int startPositionX = 1; // we start at [0][1]
 		initPiecesWithGivenColor(startPositionY, startPositionX, Color.BLACK);
-		startPositionY = 6;
+		startPositionY = 4;
 		startPositionX = 1;
 		initPiecesWithGivenColor(startPositionY, startPositionX, Color.WHITE);
 	}

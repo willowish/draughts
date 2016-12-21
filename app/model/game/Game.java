@@ -18,4 +18,7 @@ public class Game {
 	public void initGame() {
 	}
 
+	public Board getBoard(){
+		return board;
+	}
 }
