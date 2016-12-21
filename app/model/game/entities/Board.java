@@ -35,8 +35,8 @@ public class Board {
 		int startPositionY = 0; // we start at [0][1]
 		int startPositionX = 1; // we start at [0][1]
 		initPiecesWithGivenColor(startPositionY, startPositionX, Color.BLACK);
-		startPositionY = 4;
-		startPositionX = 1;
+		startPositionY = 5;
+		startPositionX = 0;
 		initPiecesWithGivenColor(startPositionY, startPositionX, Color.WHITE);
 	}
 

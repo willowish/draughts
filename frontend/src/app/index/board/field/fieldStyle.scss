@@ -1,0 +1,35 @@
+field {
+    height: 100px;
+    width: 100px;
+    display: table-cell;
+    border: 1px solid black;
+    margin: 0 auto;
+    position: relative;
+    .field-container {
+        height: 100%;
+        width: 100%;
+    }
+    .white {
+        background: white;
+    }
+    .black {
+        background: brown;
+    }
+
+    .piece {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        position: absolute;
+        top: 23%;
+        left: 23%;
+    }
+
+    .piece-white {
+        background: white;
+    }
+    .piece-black {
+        background: black;
+    }
+    
+}

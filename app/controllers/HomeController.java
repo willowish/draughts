@@ -2,7 +2,11 @@ package controllers;
 
 import static play.libs.Json.toJson;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
+import model.envelope.BoardEnvelope;
 import model.game.Game;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.index;
@@ -12,10 +16,18 @@ import views.html.index;
  */
 public class HomeController extends Controller {
 
+	public Result updateBoard() {
+//		TODO: implement board check
+		JsonNode jsonNode = request().body().asJson();
+		BoardEnvelope envelope = Json.fromJson(jsonNode, BoardEnvelope.class);
+		return ok(toJson(envelope));
+	}
+
 	public Result getBoard() {
 //        TODO: fix this, just for mock data
 		Game game = new Game();
-		return ok(toJson(game.getBoard().getBoardFields()));
+		BoardEnvelope envelope = new BoardEnvelope(game.getBoard().getBoardFields());
+		return ok(toJson(envelope));
 	}
 
 	/**

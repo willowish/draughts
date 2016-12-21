@@ -1,3 +1,6 @@
-
-
-<field></field>
+<div class="draughts-row"
+     ng-repeat="row in vm.board">
+    <field ng-repeat="item in row"
+           ng-click="vm.makeMove(item, $parent.$index, $index)"
+           item="item"></field>
+</div>
