@@ -1,6 +1,7 @@
 package model.game;
 
 import model.game.entities.Board;
+import model.game.entities.Color;
 import model.game.entities.Field;
 import model.game.entities.MovesBfs;
 
@@ -27,10 +28,10 @@ public class Game {
 		printFields(fields);
 
 		MovesBfs movesBfs = new MovesBfs(game.board);
-		movesBfs.generateNextStep();
+		movesBfs.generateNextStep(Color.WHITE);
 		movesBfs.nextSteps.forEach(nextStep -> {
 			printFields(nextStep.board.fields);
-			nextStep.generateNextStep();
+			nextStep.generateNextStep(Color.BLACK);
 
 			nextStep.nextSteps.forEach(nextnextStep -> {
 				printFields(nextnextStep.board.fields);

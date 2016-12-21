@@ -13,7 +13,7 @@ public class MovesBfs {
 		nextSteps = new HashSet<>();
 	}
 
-	public void generateNextStep() {
+	public void generateNextStep(Color playerColor) {
 		Field[][] fields = board.getFields();
 
 		for (int i = 0; i < fields.length; i++) {
@@ -24,14 +24,14 @@ public class MovesBfs {
 					continue;
 				}
 				if (piece.getType() == Type.PAWN) {
-					if (piece.getColor() == Color.BLACK) {
+					if (piece.getColor() == Color.BLACK && playerColor == Color.BLACK) {
 						if (canMove(i + 1, j + 1)) {
 							saveMove(i, j, i + 1, j + 1);
 						}
 						if (canMove(i - 1, j + 1)) {
 							saveMove(i, j, i - 1, j + 1);
 						}
-					} else if (piece.getColor() == Color.WHITE) {
+					} else if (piece.getColor() == Color.WHITE && playerColor == Color.WHITE) {
 						if (canMove(i + 1, j - 1)) {
 							saveMove(i, j, i + 1, j - 1);
 						}
