@@ -9,3 +9,6 @@ target
 app/.project
 app/.classpath
 *.class
+node_modules/
+public/app/
+public/assets/
