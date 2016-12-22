@@ -28,15 +28,15 @@ public class MovesBfs {
 						if (canMove(i + 1, j + 1)) {
 							saveMove(i, j, i + 1, j + 1);
 						}
-						if (canMove(i - 1, j + 1)) {
-							saveMove(i, j, i - 1, j + 1);
-						}
-					} else if (piece.getColor() == Color.WHITE && playerColor == Color.WHITE) {
 						if (canMove(i + 1, j - 1)) {
 							saveMove(i, j, i + 1, j - 1);
 						}
+					} else if (piece.getColor() == Color.WHITE && playerColor == Color.WHITE) {
 						if (canMove(i - 1, j - 1)) {
 							saveMove(i, j, i - 1, j - 1);
+						}
+						if (canMove(i - 1, j + 1)) {
+							saveMove(i, j, i - 1, j + 1);
 						}
 					}
 				} else if (piece.getType() == Type.QUEEN) {

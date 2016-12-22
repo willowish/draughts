@@ -31,13 +31,18 @@ export default ()=> {
                     X: vm.selectedPiece.originalPosition.X
                 };
                 vm.board[oldPos.Y][oldPos.X].piece = null;
-                boardResource.update({board:vm.board}, (data) => vm.board = data.board);
+                boardResource.update({board:vm.board, win:false}, (data) => {
+                	if(data.win){
+                		alert("Brawo. Wygrałeś.");
+                	}
+                	vm.board = data.board;
+                });
                 vm.selectedPiece = undefined;
 
             };
 
             vm.selectPiece = (field, Y, X) => {
-                if (field.piece) {
+                if (field.piece && field.piece.color==="WHITE") {
                     vm.selectedPiece = {
                         piece: field.piece,
                         originalPosition: {Y: Y, X: X}

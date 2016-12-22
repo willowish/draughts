@@ -1,42 +1,63 @@
 package controllers;
 
-import static play.libs.Json.toJson;
+import static play.libs.Json.*;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Arrays;
 
+import model.ai.ArtificialInteligence;
 import model.envelope.BoardEnvelope;
 import model.game.Game;
+import model.game.entities.Color;
+import model.game.entities.MovesBfs;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.index;
 
-/**
- * This controller contains an action to handle HTTP requests to the application's home page.
- */
 public class HomeController extends Controller {
 
+	private Game game;
+	private ArtificialInteligence ai;
+
 	public Result updateBoard() {
-//		TODO: implement board check
-		JsonNode jsonNode = request().body().asJson();
-		BoardEnvelope envelope = Json.fromJson(jsonNode, BoardEnvelope.class);
+		BoardEnvelope envelope = Json.fromJson(request().body().asJson(), BoardEnvelope.class);
+
+		MovesBfs movesBfs = new MovesBfs(game.getBoard());
+		movesBfs.generateNextStep(Color.WHITE);
+
+		for (MovesBfs nextMove : movesBfs.nextSteps) {
+			if (Arrays.deepEquals(envelope.board, nextMove.board.fields)) {
+
+				nextMove.generateNextStep(Color.BLACK);
+				double bestMark = Double.NEGATIVE_INFINITY;
+				MovesBfs bestMove = null;
+				for (MovesBfs aiNextMove : nextMove.nextSteps) {
+					double mark = ai.evaluate(aiNextMove.board);
+					if (bestMark < mark) {
+						bestMark = mark;
+						bestMove = aiNextMove;
+					}
+				}
+				if (bestMove == null) {
+					envelope = new WinEnvelope();
+					return ok(toJson(envelope));
+				}
+				game.getBoard().setFields(bestMove.board.fields);
+			}
+		}
+		envelope = new BoardEnvelope(game.getBoard().fields);
 		return ok(toJson(envelope));
 	}
 
 	public Result getBoard() {
-//        TODO: fix this, just for mock data
-		Game game = new Game();
+		game = new Game();
+		ai = new ArtificialInteligence();
+
 		BoardEnvelope envelope = new BoardEnvelope(game.getBoard().fields);
 		return ok(toJson(envelope));
 	}
 
-	/**
-	 * An action that renders an HTML page with a welcome message. The configuration in the
-	 * <code>routes</code> file means that this method will be called when the application receives
-	 * a <code>GET</code> request with a path of <code>/</code>.
-	 */
 	public Result index() {
-		return ok(index.render("Your new application is ready."));
+		return ok(views.html.index.render("Your new application is ready."));
 	}
 
 }
