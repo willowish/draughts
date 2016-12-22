@@ -1,80 +1,52 @@
 package model.game.entities;
 
+import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class MovesBfs {
 	public Board board;
 
 	public Set<MovesBfs> nextSteps;
+	static int[][] allPossibleDirections = new int[][] { { 1, 1 }, { -1, 1 }, { 1, -1 }, { -1 - 1 } };
+	static int[][] whiteDirections = new int[][] { { -1, 1 }, { -1 - 1 } };
+	static int[][] blackDirections = new int[][] { { 1, 1 }, { 1, -1 } };
+
+	private Map<Color, int[][]> directions;
 
 	public MovesBfs(Board board) {
 		this.board = board;
 		nextSteps = new HashSet<>();
+		directions = new EnumMap<>(Color.class);
+		directions.put(Color.WHITE, whiteDirections);
+		directions.put(Color.BLACK, blackDirections);
 	}
 
 	public void generateNextStep(Color playerColor) {
-		Field[][] fields = board.getFields();
-		boolean attackPossible = false;
-		// checkk for attack
-		for (int i = 0; i < fields.length; i++) {
-			for (int j = 0; j < fields[i].length; j++) {
-				Piece piece = fields[i][j].piece;
-				if (piece == null) {
-					continue;
-				}
-				if (piece.getType() == Type.PAWN) {
 
-					if (piece.getColor() == Color.BLACK && playerColor == Color.BLACK) {
-						if (canMove(i + 2, j + 2) && isThere(Color.WHITE, i + 1, j + 1)) {
-							saveAttack(i, j, i + 1, j + 1, i + 2, j + 2);
-							attackPossible = true;
-						}
-						if (canMove(i + 2, j - 2) && isThere(Color.WHITE, i + 1, j - 1)) {
-							saveAttack(i, j, i + 1, j - 1, i + 2, j - 2);
-							attackPossible = true;
-						}
-					} else if (piece.getColor() == Color.WHITE && playerColor == Color.WHITE) {
-						if (canMove(i - 2, j + 2) && isThere(Color.BLACK, i - 1, j + 1)) {
-							saveAttack(i, j, i - 1, j + 1, i - 2, j + 2);
-							attackPossible = true;
-						}
-						if (canMove(i - 2, j - 2) && isThere(Color.BLACK, i - 1, j - 1)) {
-							saveAttack(i, j, i - 1, j - 1, i - 2, j - 2);
-							attackPossible = true;
-						}
-					}
-				} else if (piece.getType() == Type.QUEEN) {
-					// TODO move queen
-				}
-			}
-		}
+		boolean attackPossible = savePossibleAttacks(playerColor);
 
 		if (attackPossible) {
 			return;
 		}
-		// check for normal moves
+
+		savePossibleMoves(playerColor);
+	}
+
+	private void savePossibleMoves(Color playerColor) {
+		int[][] playersDirections = directions.get(playerColor);
+		Field[][] fields = board.fields;
 		for (int i = 0; i < fields.length; i++) {
 			for (int j = 0; j < fields[i].length; j++) {
 				Piece piece = fields[i][j].piece;
-				if (piece == null) {
+				if (piece == null || piece.getColor() != playerColor) {
 					continue;
 				}
 				if (piece.getType() == Type.PAWN) {
-
-					if (piece.getColor() == Color.BLACK && playerColor == Color.BLACK) {
-						if (canMove(i + 1, j + 1)) {
-							saveMove(i, j, i + 1, j + 1);
-						}
-						if (canMove(i + 1, j - 1)) {
-							saveMove(i, j, i + 1, j - 1);
-						}
-					} else if (piece.getColor() == Color.WHITE && playerColor == Color.WHITE) {
-						if (canMove(i - 1, j - 1)) {
-							saveMove(i, j, i - 1, j - 1);
-						}
-						if (canMove(i - 1, j + 1)) {
-							saveMove(i, j, i - 1, j + 1);
+					for (int[] direction : playersDirections) {
+						if (canMove(i + direction[0], j + direction[1])) {
+							saveMove(i, j, direction[0], direction[1]);
 						}
 					}
 				} else if (piece.getType() == Type.QUEEN) {
@@ -84,12 +56,51 @@ public class MovesBfs {
 		}
 	}
 
-	private void saveAttack(int i, int j, int newI, int newJ, int defeatedI, int defeatedJ) {
+	private boolean savePossibleAttacks(Color playerColor) {
+		Field[][] fields = board.fields;
+		boolean attackPossible = false;
+		for (int i = 0; i < fields.length; i++) {
+			for (int j = 0; j < fields[i].length; j++) {
+				Piece piece = fields[i][j].piece;
+				if (piece == null || piece.getColor() != playerColor) {
+					continue;
+				}
+				if (piece.getType() == Type.PAWN) {
+					for (int[] direction : allPossibleDirections) {
+						if (canAttack(playerColor, i, j, direction[0], direction[1])) {
+							saveAttack(i, j, direction[0], direction[1]);
+							attackPossible = true;
+						}
+					}
+
+				} else if (piece.getType() == Type.QUEEN) {
+					// TODO move queen
+				}
+			}
+		}
+		return attackPossible;
+	}
+
+	private boolean canAttack(Color playerColor, int i, int j, int iDelta, int jDelta) {
+		return canMove(i + iDelta * 2, j + jDelta * 2) && isThere(playerColor.getOpposite(), i + iDelta, j + jDelta);
+	}
+
+	private void saveAttack(int i, int j, int directionI, int directionJ) {
+		Board newBoard = getBoardWithMovedPawn(i, j, i + directionI * 2, j + directionJ * 2);
+		newBoard.fields[i + directionI][j + directionJ].piece = null;
+		nextSteps.add(new MovesBfs(newBoard));
+	}
+
+	private void saveMove(int i, int j, int directionI, int directionJ) {
+		Board newBoard = getBoardWithMovedPawn(i, j, i + directionI, j + directionJ);
+		nextSteps.add(new MovesBfs(newBoard));
+	}
+
+	private Board getBoardWithMovedPawn(int i, int j, int newI, int newJ) {
 		Board newBoard = new Board(board.getFields());
 		newBoard.fields[newI][newJ].piece = newBoard.fields[i][j].piece;
 		newBoard.fields[i][j].piece = null;
-		newBoard.fields[defeatedI][defeatedJ].piece = null;
-		nextSteps.add(new MovesBfs(newBoard));
+		return newBoard;
 	}
 
 	private boolean isThere(Color color, int i, int j) {
@@ -100,13 +111,6 @@ public class MovesBfs {
 			return false;
 		}
 		return board.getFields()[i][j].piece.getColor() == color;
-	}
-
-	private void saveMove(int i, int j, int newI, int newJ) {
-		Board newBoard = new Board(board.getFields());
-		newBoard.fields[newI][newJ].piece = newBoard.fields[i][j].piece;
-		newBoard.fields[i][j].piece = null;
-		nextSteps.add(new MovesBfs(newBoard));
 	}
 
 	private boolean canMove(int i, int j) {
