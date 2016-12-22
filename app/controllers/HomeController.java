@@ -25,6 +25,7 @@ public class HomeController extends Controller {
 		movesBfs.generateNextStep(Color.WHITE);
 
 		for (MovesBfs nextMove : movesBfs.nextSteps) {
+			Game.printFields(nextMove.board.fields);
 			if (Arrays.deepEquals(envelope.board, nextMove.board.fields)) {
 
 				nextMove.generateNextStep(Color.BLACK);

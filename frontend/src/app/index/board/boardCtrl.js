@@ -30,10 +30,14 @@ export default ()=> {
                     Y: vm.selectedPiece.originalPosition.Y,
                     X: vm.selectedPiece.originalPosition.X
                 };
+                if(Math.abs(oldPos.X-X)==2){
+                	vm.board[(oldPos.Y+Y)/2][(oldPos.X+X)/2].piece = null;
+                }
                 vm.board[oldPos.Y][oldPos.X].piece = null;
                 boardResource.update({board:vm.board, win:false}, (data) => {
                 	if(data.win){
                 		alert("Brawo. Wygrałeś.");
+                		return;
                 	}
                 	vm.board = data.board;
                 });

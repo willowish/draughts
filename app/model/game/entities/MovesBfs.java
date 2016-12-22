@@ -9,9 +9,9 @@ public class MovesBfs {
 	public Board board;
 
 	public Set<MovesBfs> nextSteps;
-	static int[][] allPossibleDirections = new int[][] { { 1, 1 }, { -1, 1 }, { 1, -1 }, { -1 - 1 } };
-	static int[][] whiteDirections = new int[][] { { -1, 1 }, { -1 - 1 } };
-	static int[][] blackDirections = new int[][] { { 1, 1 }, { 1, -1 } };
+	static int[][] allPossibleDirections = new int[][] {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+	static int[][] whiteDirections = new int[][] {{-1, 1}, {-1, -1}};
+	static int[][] blackDirections = new int[][] {{1, 1}, {1, -1}};
 
 	private Map<Color, int[][]> directions;
 

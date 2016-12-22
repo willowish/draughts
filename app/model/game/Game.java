@@ -40,14 +40,13 @@ public class Game {
 		});
 	}
 
-	private static void printFields(Field[][] fields) {
+	public static void printFields(Field[][] fields) {
 		for (int i = 0; i < fields.length; i++) {
 			Field[] row = fields[i];
 			for (int j = 0; j < row.length; j++) {
 				Field field = row[j];
 				System.out.print(field);
 			}
-			System.out.println();
 			System.out.println();
 		}
 

@@ -31,7 +31,10 @@ public class Piece {
 
 	@Override
 	public String toString() {
-		return String.valueOf(code());
+		if (color == Color.WHITE)
+			return "X";
+		else
+			return "O";
 	}
 
 	@Override

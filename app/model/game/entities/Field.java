@@ -19,9 +19,9 @@ public class Field {
 	@Override
 	public String toString() {
 		if (piece == null) {
-			return "\t|";
+			return " |";
 		}
-		return piece.toString() + "\t|";
+		return piece.toString() + "|";
 	}
 
 	@Override
