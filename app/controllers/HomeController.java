@@ -39,14 +39,12 @@ public class HomeController extends Controller {
 					}
 				}
 				if (bestMove == null) {
-					envelope = new WinEnvelope();
-					return ok(toJson(envelope));
+					return ok(toJson(new WinEnvelope(envelope.board)));
 				}
 				game.getBoard().setFields(bestMove.board.fields);
 			}
 		}
-		envelope = new BoardEnvelope(game.getBoard().fields);
-		return ok(toJson(envelope));
+		return ok(toJson(new BoardEnvelope(game.getBoard().fields)));
 	}
 
 	public Result getBoard() {

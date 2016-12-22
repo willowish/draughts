@@ -37,7 +37,6 @@ export default ()=> {
                 boardResource.update({board:vm.board, win:false}, (data) => {
                 	if(data.win){
                 		alert("Brawo. Wygrałeś.");
-                		return;
                 	}
                 	vm.board = data.board;
                 });
