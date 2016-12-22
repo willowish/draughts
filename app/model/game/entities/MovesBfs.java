@@ -15,15 +15,53 @@ public class MovesBfs {
 
 	public void generateNextStep(Color playerColor) {
 		Field[][] fields = board.getFields();
-
+		boolean attackPossible = false;
+		// checkk for attack
 		for (int i = 0; i < fields.length; i++) {
 			for (int j = 0; j < fields[i].length; j++) {
 				Piece piece = fields[i][j].piece;
-				// TODO spr najpierw czy jest bicie wymuszone gdzies
 				if (piece == null) {
 					continue;
 				}
 				if (piece.getType() == Type.PAWN) {
+
+					if (piece.getColor() == Color.BLACK && playerColor == Color.BLACK) {
+						if (canMove(i + 2, j + 2) && isThere(Color.WHITE, i + 1, j + 1)) {
+							saveAttack(i, j, i + 1, j + 1, i + 2, j + 2);
+							attackPossible = true;
+						}
+						if (canMove(i + 2, j - 2) && isThere(Color.WHITE, i + 1, j - 1)) {
+							saveAttack(i, j, i + 1, j - 1, i + 2, j - 2);
+							attackPossible = true;
+						}
+					} else if (piece.getColor() == Color.WHITE && playerColor == Color.WHITE) {
+						if (canMove(i - 2, j + 2) && isThere(Color.BLACK, i - 1, j + 1)) {
+							saveAttack(i, j, i - 1, j + 1, i - 2, j + 2);
+							attackPossible = true;
+						}
+						if (canMove(i - 2, j - 2) && isThere(Color.BLACK, i - 1, j - 1)) {
+							saveAttack(i, j, i - 1, j - 1, i - 2, j - 2);
+							attackPossible = true;
+						}
+					}
+				} else if (piece.getType() == Type.QUEEN) {
+					// TODO move queen
+				}
+			}
+		}
+
+		if (attackPossible) {
+			return;
+		}
+		// check for normal moves
+		for (int i = 0; i < fields.length; i++) {
+			for (int j = 0; j < fields[i].length; j++) {
+				Piece piece = fields[i][j].piece;
+				if (piece == null) {
+					continue;
+				}
+				if (piece.getType() == Type.PAWN) {
+
 					if (piece.getColor() == Color.BLACK && playerColor == Color.BLACK) {
 						if (canMove(i + 1, j + 1)) {
 							saveMove(i, j, i + 1, j + 1);
@@ -44,6 +82,24 @@ public class MovesBfs {
 				}
 			}
 		}
+	}
+
+	private void saveAttack(int i, int j, int newI, int newJ, int defeatedI, int defeatedJ) {
+		Board newBoard = new Board(board.getFields());
+		newBoard.fields[newI][newJ].piece = newBoard.fields[i][j].piece;
+		newBoard.fields[i][j].piece = null;
+		newBoard.fields[defeatedI][defeatedJ].piece = null;
+		nextSteps.add(new MovesBfs(newBoard));
+	}
+
+	private boolean isThere(Color color, int i, int j) {
+		if (i < 0 || i > 7 || j < 0 || j > 7) {
+			return false;
+		}
+		if (board.getFields()[i][j].piece == null) {
+			return false;
+		}
+		return board.getFields()[i][j].piece.getColor() == color;
 	}
 
 	private void saveMove(int i, int j, int newI, int newJ) {
