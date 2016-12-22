@@ -1,10 +1,12 @@
 package model.game.entities;
 
-import static model.game.entities.Type.QUEEN;
+import static model.game.entities.Type.*;
 
 public class Piece {
-	private final Color color;
+	private Color color;
 	private Type type;
+
+	public Piece() {}
 
 	public Piece(Color color, Type type) {
 		this.color = color;

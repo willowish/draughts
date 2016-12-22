@@ -3,7 +3,9 @@ package model.game.entities;
 public class Field {
 	public Piece piece;
 
-	public final Color color;
+	public Color color;
+
+	public Field() {}
 
 	public Field(Color color) {
 		this.color = color;

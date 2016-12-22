@@ -5,6 +5,8 @@ import model.game.entities.Field;
 public class BoardEnvelope {
 	public Field[][] board;
 
+	public BoardEnvelope() {}
+
 	public BoardEnvelope(Field[][] board) {
 		this.board = board;
 	}

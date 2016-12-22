@@ -12,6 +12,7 @@ export default ()=> {
         controllerAs: 'vm',
         controller($scope) {
             let vm = this;
+            
             vm.getFieldColor = () => {
                 return $scope.item.color.toLowerCase();
             };

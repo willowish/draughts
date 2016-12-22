@@ -31,7 +31,7 @@ export default ()=> {
                     X: vm.selectedPiece.originalPosition.X
                 };
                 vm.board[oldPos.Y][oldPos.X].piece = null;
-                boardResource.update(vm.board, (board)=> vm.board = board);
+                boardResource.update({board:vm.board}, (data) => vm.board = data.board);
                 vm.selectedPiece = undefined;
 
             };
