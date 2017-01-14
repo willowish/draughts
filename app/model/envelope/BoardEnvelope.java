@@ -3,11 +3,11 @@ package model.envelope;
 import model.game.entities.Field;
 
 public class BoardEnvelope {
-	public Field[][] board;
+	public Field[][] fields;
 
 	public BoardEnvelope() {}
 
 	public BoardEnvelope(Field[][] board) {
-		this.board = board;
+		this.fields = board;
 	}
 }

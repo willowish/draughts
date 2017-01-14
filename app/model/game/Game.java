@@ -1,5 +1,9 @@
 package model.game;
 
+import java.util.Arrays;
+import java.util.EnumMap;
+
+import model.envelope.BoardEnvelope;
 import model.game.entities.Board;
 import model.game.entities.Color;
 import model.game.entities.Field;
@@ -8,11 +12,16 @@ import model.game.entities.MovesBfs;
 public class Game {
 
 	private Board board;
+	private MovesBfs movesBfs;
+	private EnumMap<Color, Player> players;
 
-	public Game() {
+	public Game(Player whitePlayer, Player blackPlayer) {
 		board = new Board();
+		movesBfs = new MovesBfs(board, Color.WHITE);
+		players = new EnumMap<>(Color.class);
+		players.put(Color.WHITE, whitePlayer);
+		players.put(Color.BLACK, blackPlayer);
 	}
-
 
 	public void setBoard(Board board) {
 		this.board = board;
@@ -22,25 +31,37 @@ public class Game {
 		return board;
 	}
 
-	public static void main(String[] args) {
-		Game game = new Game();
-		Field[][] fields = game.board.getFields();
+	public void updateBoard(BoardEnvelope envelope) {
 
-		printFields(fields);
+		movesBfs.generateNextStep();
 
-		MovesBfs movesBfs = new MovesBfs(game.board);
-		movesBfs.generateNextStep(Color.WHITE);
-		movesBfs.nextSteps.forEach(nextStep -> {
-			printFields(nextStep.board.fields);
-			nextStep.generateNextStep(Color.BLACK);
+		for (MovesBfs nextMove : movesBfs.nextMoves) {
+			if (Arrays.deepEquals(envelope.fields, nextMove.board.fields)) {
+				board.setFields(nextMove.board.fields);
+				movesBfs = nextMove;
 
-			nextStep.nextSteps.forEach(nextnextStep -> {
-				printFields(nextnextStep.board.fields);
-			});
-		});
+				if (noMoreMoves()) {
+					throw new WinException();
+				}
+
+				players.get(nextMove.getActualColor().getOpposite()).proceed(this);
+				return;
+			}
+		}
+		throw new IllegalMoveException();
 	}
 
-	public static void printFields(Field[][] fields) {
+	private boolean noMoreMoves() {
+		movesBfs.generateNextStep();
+		return movesBfs.nextMoves.isEmpty();
+	}
+
+	public MovesBfs getMovesBfs() {
+		return movesBfs;
+	}
+
+	public void printFields() {
+		Field[][] fields = board.fields;
 		for (int i = 0; i < fields.length; i++) {
 			Field[] row = fields[i];
 			for (int j = 0; j < row.length; j++) {
@@ -54,5 +75,8 @@ public class Game {
 		System.out.println();
 	}
 
+	public void start() {
+		players.get(Color.WHITE).proceed(this);
+	}
 
 }

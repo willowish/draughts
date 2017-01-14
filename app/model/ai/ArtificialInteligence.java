@@ -1,6 +1,6 @@
 package model.ai;
 
-import static model.genetics.Configuration.*;
+import static model.genetics.Configuration.nodesInInputLayer;
 
 import model.ai.alphabeta.AlphaBetaCutoff;
 import model.ai.nn.NeuralNetwork;
@@ -22,7 +22,6 @@ public class ArtificialInteligence implements IArtificialInteligence {
 		this.nn = nn;
 		ab = new AlphaBetaCutoff(nn);
 	}
-
 
 	@Override
 	public double evaluate(Board board) {
@@ -47,4 +46,5 @@ public class ArtificialInteligence implements IArtificialInteligence {
 	public NeuralNetwork getNeuralNetwork() {
 		return nn;
 	}
+
 }

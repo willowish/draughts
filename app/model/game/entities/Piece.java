@@ -1,12 +1,13 @@
 package model.game.entities;
 
-import static model.game.entities.Type.*;
+import static model.game.entities.Type.QUEEN;
 
 public class Piece {
 	private Color color;
 	private Type type;
 
-	public Piece() {}
+	public Piece() {
+	}
 
 	public Piece(Color color, Type type) {
 		this.color = color;
@@ -32,9 +33,9 @@ public class Piece {
 	@Override
 	public String toString() {
 		if (color == Color.WHITE)
-			return "X";
-		else
 			return "O";
+		else
+			return "X";
 	}
 
 	@Override

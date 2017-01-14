@@ -8,30 +8,36 @@ import java.util.Set;
 public class MovesBfs {
 	public Board board;
 
-	public Set<MovesBfs> nextSteps;
-	static int[][] allPossibleDirections = new int[][] {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
-	static int[][] whiteDirections = new int[][] {{-1, 1}, {-1, -1}};
-	static int[][] blackDirections = new int[][] {{1, 1}, {1, -1}};
+	public Set<MovesBfs> nextMoves;
+	static int[][] allPossibleDirections = new int[][] { { 1, 1 }, { -1, 1 }, { 1, -1 }, { -1, -1 } };
+	static int[][] whiteDirections = new int[][] { { -1, 1 }, { -1, -1 } };
+	static int[][] blackDirections = new int[][] { { 1, 1 }, { 1, -1 } };
 
 	private Map<Color, int[][]> directions;
 
-	public MovesBfs(Board board) {
+	private Color actualColor;
+
+	public MovesBfs(Board board, Color actualColor) {
 		this.board = board;
-		nextSteps = new HashSet<>();
 		directions = new EnumMap<>(Color.class);
 		directions.put(Color.WHITE, whiteDirections);
 		directions.put(Color.BLACK, blackDirections);
+		this.actualColor = actualColor;
 	}
 
-	public void generateNextStep(Color playerColor) {
+	public void generateNextStep() {
+		if (nextMoves != null) {
+			return;
+		}
+		nextMoves = new HashSet<>();
 
-		boolean attackPossible = savePossibleAttacks(playerColor);
+		boolean attackPossible = savePossibleAttacks(actualColor);
 
 		if (attackPossible) {
 			return;
 		}
 
-		savePossibleMoves(playerColor);
+		savePossibleMoves(actualColor);
 	}
 
 	private void savePossibleMoves(Color playerColor) {
@@ -88,12 +94,12 @@ public class MovesBfs {
 	private void saveAttack(int i, int j, int directionI, int directionJ) {
 		Board newBoard = getBoardWithMovedPawn(i, j, i + directionI * 2, j + directionJ * 2);
 		newBoard.fields[i + directionI][j + directionJ].piece = null;
-		nextSteps.add(new MovesBfs(newBoard));
+		nextMoves.add(new MovesBfs(newBoard, actualColor.getOpposite()));
 	}
 
 	private void saveMove(int i, int j, int directionI, int directionJ) {
 		Board newBoard = getBoardWithMovedPawn(i, j, i + directionI, j + directionJ);
-		nextSteps.add(new MovesBfs(newBoard));
+		nextMoves.add(new MovesBfs(newBoard, actualColor.getOpposite()));
 	}
 
 	private Board getBoardWithMovedPawn(int i, int j, int newI, int newJ) {
@@ -118,6 +124,10 @@ public class MovesBfs {
 			return false;
 		}
 		return board.getFields()[i][j].piece == null;
+	}
+
+	public Color getActualColor() {
+		return actualColor;
 	}
 
 	@Override
