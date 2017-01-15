@@ -33,7 +33,6 @@ public class ArtificialPlayersGameStarter {
 		List<BiasedWeighted> dumbPopulation = new LinkedList<>();
 		dumbPopulation.addAll(artificialPlayersGameStarter2.population);
 		artificialPlayersGameStarter2.population.addAll(smartPopulation);
-		smartPopulation.forEach(nn -> artificialPlayersGameStarter2.results.put(nn, 0));
 		artificialPlayersGameStarter2.start();
 
 		int res = 0, res2 = 0;
@@ -55,13 +54,13 @@ public class ArtificialPlayersGameStarter {
 	public ArtificialPlayersGameStarter() {
 		pg = new PopulationGenerator(new NeuralNetworkProvider());
 		population = pg.generateRandomPopulation(25);
-		results = new HashMap<>();
-		population.forEach(nn -> results.put(nn, 0));
 
 	}
 
 	private void start() {
 		Game game = null;
+		results = new HashMap<>();
+		population.forEach(nn -> results.put(nn, 0));
 
 		for (BiasedWeighted bw1 : population) {
 			ArtificialInteligence player1Inteligence = new ArtificialInteligence((NeuralNetwork) bw1);
@@ -81,7 +80,7 @@ public class ArtificialPlayersGameStarter {
 		}
 		List<BiasedWeighted> sourcePopulation = new LinkedList<>();
 		results.forEach((nn, result) -> {
-			if (result > 25) {
+			if (result > 35) {
 				sourcePopulation.add(nn);
 			}
 		});
