@@ -1,37 +1,93 @@
 package model.game;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+import model.ai.ArtificialInteligence;
 import model.ai.ArtificialPlayer;
+import model.ai.nn.NeuralNetwork;
 import model.game.entities.Color;
+import model.genetics.BiasedWeighted;
+import model.genetics.NeuralNetworkProvider;
+import model.genetics.PopulationGenerator;
 
 public class ArtificialPlayersGameStarter {
 
+	private PopulationGenerator pg;
+	private List<BiasedWeighted> population;
+	private HashMap<BiasedWeighted, Integer> results;
+
 	public static void main(String[] args) {
 		long time = System.currentTimeMillis();
-		new ArtificialPlayersGameStarter();
+		ArtificialPlayersGameStarter artificialPlayersGameStarter = new ArtificialPlayersGameStarter();
+
+		// try some iterations
+		for (int i = 0; i < 100; i++) {
+			artificialPlayersGameStarter.start();
+		}
+		// now try "smart" with random networks
+		List<BiasedWeighted> smartPopulation = artificialPlayersGameStarter.population;
+
+		ArtificialPlayersGameStarter artificialPlayersGameStarter2 = new ArtificialPlayersGameStarter();
+		List<BiasedWeighted> dumbPopulation = new LinkedList<>();
+		dumbPopulation.addAll(artificialPlayersGameStarter2.population);
+		artificialPlayersGameStarter2.population.addAll(smartPopulation);
+		smartPopulation.forEach(nn -> artificialPlayersGameStarter2.results.put(nn, 0));
+		artificialPlayersGameStarter2.start();
+
+		int res = 0, res2 = 0;
+		// check results of smart nn's
+		for (BiasedWeighted nn : dumbPopulation) {
+			System.out.print(artificialPlayersGameStarter2.results.get(nn) + " ");
+			res += artificialPlayersGameStarter2.results.get(nn);
+		}
+		System.out.println();
+		for (BiasedWeighted nn : smartPopulation) {
+			System.out.print(artificialPlayersGameStarter2.results.get(nn) + " ");
+			res2 += artificialPlayersGameStarter2.results.get(nn);
+		}
+		System.out.println(res + ":" + res2);
+
 		System.out.println("Time: " + (System.currentTimeMillis() - time) + "ms");
 	}
 
 	public ArtificialPlayersGameStarter() {
-		int tries = 1000;
-		int whiteResult = 0;
+		pg = new PopulationGenerator(new NeuralNetworkProvider());
+		population = pg.generateRandomPopulation(25);
+		results = new HashMap<>();
+		population.forEach(nn -> results.put(nn, 0));
 
-		for (int i = 0; i < tries; i++) {
+	}
 
-			Game game = null;
-			try {
-				game = new Game(new ArtificialPlayer(), new ArtificialPlayer());
-				game.start();
-			} catch (WinException win) {
-				// game.printFields();
-				Color winningPlayer = game.getMovesBfs().getActualColor().getOpposite();
-				System.out.println("win for " + winningPlayer);
-				if (winningPlayer == Color.WHITE) {
-					whiteResult++;
+	private void start() {
+		Game game = null;
+
+		for (BiasedWeighted bw1 : population) {
+			ArtificialInteligence player1Inteligence = new ArtificialInteligence((NeuralNetwork) bw1);
+			ArtificialPlayer player1 = new ArtificialPlayer(player1Inteligence);
+			for (BiasedWeighted bw2 : population) {
+				ArtificialInteligence player2Inteligence = new ArtificialInteligence((NeuralNetwork) bw1);
+				ArtificialPlayer player2 = new ArtificialPlayer(player2Inteligence);
+
+				game = new Game(player1, player2);
+				try {
+					game.start();
+				} catch (WinException w) {
+					BiasedWeighted winningPlayer = w.getWinningColor() == Color.WHITE ? bw1 : bw2;
+					results.put(winningPlayer, results.get(winningPlayer) + 1);
 				}
 			}
 		}
+		List<BiasedWeighted> sourcePopulation = new LinkedList<>();
+		results.forEach((nn, result) -> {
+			if (result > 25) {
+				sourcePopulation.add(nn);
+			}
+		});
 
-		System.out.println("White " + whiteResult + ":" + (tries - whiteResult) + " Black");
+		population = pg.generateNextGeneration(sourcePopulation, 25);
+		population.forEach(nn -> results.put(nn, 0));
 
 	}
 }

@@ -41,7 +41,7 @@ public class Game {
 				movesBfs = nextMove;
 
 				if (noMoreMoves()) {
-					throw new WinException();
+					throw new WinException(movesBfs.getActualColor().getOpposite());
 				}
 
 				players.get(nextMove.getActualColor().getOpposite()).proceed(this);
