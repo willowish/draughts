@@ -56,7 +56,15 @@ public class MovesBfs {
 						}
 					}
 				} else if (piece.getType() == Type.QUEEN) {
-					// TODO move queen
+					for (int[] direction : allPossibleDirections) {
+						for (int positionX = i, positionY = j; isCoordInBoard(positionX, positionY)
+								&& !isThere(actualColor.getOpposite(), positionX,
+										positionY); positionX += direction[0], positionY += direction[1]) {
+							if (canMove(positionX, positionY)) {
+								saveMove(i, j, positionX - i, positionY - j);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -80,11 +88,27 @@ public class MovesBfs {
 					}
 
 				} else if (piece.getType() == Type.QUEEN) {
-					// TODO move queen
+					for (int[] direction : allPossibleDirections) {
+						for (int positionX = i, positionY = j; isCoordInBoard(positionX,
+								positionY); positionX += direction[0], positionY += direction[1]) {
+
+							if (canMove(positionX, positionY) && isThere(playerColor.getOpposite(),
+									positionX - direction[0], positionY - direction[1])) {
+								saveQueenAttack(i, j, positionX, positionY, positionX - direction[0],
+										positionY - direction[1]);
+								attackPossible = true;
+								break;
+							}
+						}
+					}
 				}
 			}
 		}
 		return attackPossible;
+	}
+
+	private boolean isCoordInBoard(int positionX, int positionY) {
+		return positionX >= 0 && positionX <= 7 && positionY >= 0 && positionY <= 7;
 	}
 
 	private boolean canAttack(Color playerColor, int i, int j, int iDelta, int jDelta) {
@@ -97,6 +121,12 @@ public class MovesBfs {
 		nextMoves.add(new MovesBfs(newBoard, actualColor.getOpposite()));
 	}
 
+	private void saveQueenAttack(int startX, int startY, int endX, int endY, int beatenX, int beatenY) {
+		Board newBoard = getBoardWithMovedPawn(startX, startY, endX, endY);
+		newBoard.fields[beatenX][beatenY].piece = null;
+		nextMoves.add(new MovesBfs(newBoard, actualColor.getOpposite()));
+	}
+
 	private void saveMove(int i, int j, int directionI, int directionJ) {
 		Board newBoard = getBoardWithMovedPawn(i, j, i + directionI, j + directionJ);
 		nextMoves.add(new MovesBfs(newBoard, actualColor.getOpposite()));
@@ -105,6 +135,9 @@ public class MovesBfs {
 	private Board getBoardWithMovedPawn(int i, int j, int newI, int newJ) {
 		Board newBoard = new Board(board.getFields());
 		newBoard.fields[newI][newJ].piece = newBoard.fields[i][j].piece;
+		if (newI == 0 || newI == 7) {
+			newBoard.fields[newI][newJ].piece.promote();
+		}
 		newBoard.fields[i][j].piece = null;
 		return newBoard;
 	}

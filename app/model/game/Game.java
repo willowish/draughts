@@ -2,6 +2,7 @@ package model.game;
 
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.LinkedList;
 
 import model.envelope.BoardEnvelope;
 import model.game.entities.Board;
@@ -14,6 +15,8 @@ public class Game {
 	private Board board;
 	private MovesBfs movesBfs;
 	private EnumMap<Color, Player> players;
+	private LinkedList<Field[][]> history;
+	private int sameStates;
 
 	public Game(Player whitePlayer, Player blackPlayer) {
 		board = new Board();
@@ -21,6 +24,7 @@ public class Game {
 		players = new EnumMap<>(Color.class);
 		players.put(Color.WHITE, whitePlayer);
 		players.put(Color.BLACK, blackPlayer);
+		history = new LinkedList<>();
 	}
 
 	public void setBoard(Board board) {
@@ -40,15 +44,32 @@ public class Game {
 				board.setFields(nextMove.board.fields);
 				movesBfs = nextMove;
 
+				checkHistoryForDraw();
+				addToHistory();
+
 				if (noMoreMoves()) {
 					throw new WinException(movesBfs.getActualColor().getOpposite());
 				}
-
-				players.get(nextMove.getActualColor().getOpposite()).proceed(this);
 				return;
 			}
 		}
 		throw new IllegalMoveException();
+	}
+
+	private void checkHistoryForDraw() {
+		if (history.stream().anyMatch(fields -> Arrays.deepEquals(fields, board.fields))) {
+			sameStates++;
+			if (sameStates >= 15) {
+				throw new WinException(null);
+			}
+		}
+	}
+
+	private void addToHistory() {
+		history.addLast(board.fields);
+		if (history.size() > 15) {
+			history.removeFirst();
+		}
 	}
 
 	private boolean noMoreMoves() {
@@ -76,7 +97,10 @@ public class Game {
 	}
 
 	public void start() {
-		players.get(Color.WHITE).proceed(this);
+		while (true) {
+			players.get(Color.WHITE).proceed(this);
+			players.get(Color.BLACK).proceed(this);
+		}
 	}
 
 }

@@ -32,10 +32,17 @@ public class Piece {
 
 	@Override
 	public String toString() {
-		if (color == Color.WHITE)
-			return "O";
-		else
-			return "X";
+		if (type == Type.PAWN) {
+			if (color == Color.WHITE)
+				return "O";
+			else
+				return "X";
+		} else {
+			if (color == Color.WHITE)
+				return "Ô";
+			else
+				return "¥";
+		}
 	}
 
 	@Override
