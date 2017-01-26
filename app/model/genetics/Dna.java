@@ -25,13 +25,13 @@ public class Dna {
 	public String serialize() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(Arrays.stream(biases).mapToObj(d -> Double.toString(d)).collect(Collectors.joining(";")));
-		sb.append("$");
+		sb.append(";;;");
 		sb.append(Arrays.stream(weights).mapToObj(d -> Double.toString(d)).collect(Collectors.joining(";")));
 		return sb.toString();
 	}
 
 	public static Dna deserialize(String str) {
-		String[] split = str.split("$");
+		String[] split = str.split(";;;");
 		double[] biases = Arrays.stream(split[0].split(";")).mapToDouble(Double::valueOf).toArray();
 		double[] weights = Arrays.stream(split[1].split(";")).mapToDouble(Double::valueOf).toArray();
 		return new Dna(biases, weights);
