@@ -17,6 +17,10 @@ public class ArtificialPlayer implements Player {
 		this.ai = ai;
 	}
 
+	public ArtificialInteligence getAi() {
+		return ai;
+	}
+
 	@Override
 	public void proceed(Game game) {
 		game.getMovesBfs().generateNextStep();

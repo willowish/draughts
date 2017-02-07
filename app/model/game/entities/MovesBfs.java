@@ -81,7 +81,7 @@ public class MovesBfs {
 	}
 
 	private boolean isOppositePlayersPiece(Color playerColor, int i, int j) {
-		return (fields[i][j] > 0 && playerColor == Color.WHITE) || (fields[i][j] < 0 && playerColor == Color.BLACK);
+		return (fields[i][j] < 0 && playerColor == Color.WHITE) || (fields[i][j] > 0 && playerColor == Color.BLACK);
 	}
 
 	private boolean savePossibleAttacks(Color playerColor) {
