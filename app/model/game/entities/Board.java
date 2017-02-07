@@ -86,4 +86,20 @@ public class Board {
 	public void setFields(Field[][] fields) {
 		this.fields = fields;
 	}
+
+	public byte[][] toByteArray() {
+		byte[][] newFields = new byte[fields.length][fields[0].length];
+		for (int i = 0; i < fields.length; i++) {
+			for (int j = 0; j < fields[i].length; j++) {
+				if (fields[i][j].piece == null) {
+					continue;
+				}
+				newFields[i][j] = (byte) fields[i][j].piece.getType().getValue();
+				if (fields[i][j].piece.getColor() == Color.BLACK) {
+					newFields[i][j] *= -1;
+				}
+			}
+		}
+		return newFields;
+	}
 }

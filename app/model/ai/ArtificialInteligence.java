@@ -4,9 +4,6 @@ import static model.genetics.Configuration.nodesInInputLayer;
 
 import model.ai.alphabeta.AlphaBetaCutoff;
 import model.ai.nn.NeuralNetwork;
-import model.game.entities.Board;
-import model.game.entities.Field;
-import model.game.entities.Piece;
 
 public class ArtificialInteligence implements IArtificialInteligence {
 
@@ -24,23 +21,16 @@ public class ArtificialInteligence implements IArtificialInteligence {
 	}
 
 	@Override
-	public double evaluate(Board board) {
+	public double evaluate(byte[][] fields) {
 		double[] input = new double[nodesInInputLayer];
 		int idx = 0;
 
-		Field[][] fields = board.getFields();
 		for (int i = 0; i < fields.length; i++) {
 			for (int j = 0; j < fields[i].length; j += 2) {
-				input[idx++] = codeOf(fields[i][j].piece) + codeOf(fields[i][j].piece);
+				input[idx++] = fields[i][j];
 			}
 		}
 		return nn.compute(input);
-	}
-
-	private int codeOf(Piece piece) {
-		if (piece == null)
-			return 0;
-		return piece.code();
 	}
 
 	public NeuralNetwork getNeuralNetwork() {

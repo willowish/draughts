@@ -39,7 +39,7 @@ public class ArtificialPlayersGameStarter {
 			// artificialPlayersGameStarter.population = smartPopulation;
 		}
 		// try some iterations
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 1; i++) {
 			artificialPlayersGameStarter.start();
 		}
 		// now try "smart" with random networks
@@ -115,25 +115,24 @@ public class ArtificialPlayersGameStarter {
 	}
 
 	private void start() {
-		Game game = null;
 		results = new HashMap<>();
 		population.forEach(nn -> results.put(nn, 0));
 
 		for (BiasedWeighted bw1 : population) {
 			ArtificialInteligence player1Inteligence = new ArtificialInteligence((NeuralNetwork) bw1);
 			ArtificialPlayer player1 = new ArtificialPlayer(player1Inteligence);
-			for (BiasedWeighted bw2 : population) {
+			population.parallelStream().forEach((bw2) -> {
 				ArtificialInteligence player2Inteligence = new ArtificialInteligence((NeuralNetwork) bw1);
 				ArtificialPlayer player2 = new ArtificialPlayer(player2Inteligence);
 
-				game = new Game(player1, player2);
+				Game game = new Game(player1, player2);
 				try {
 					game.start();
 				} catch (WinException w) {
 					BiasedWeighted winningPlayer = w.getWinningColor() == Color.WHITE ? bw1 : bw2;
 					results.put(winningPlayer, results.get(winningPlayer) + 1);
 				}
-			}
+			});
 		}
 		List<BiasedWeighted> sourcePopulation = new LinkedList<>();
 		results.forEach((nn, result) -> {

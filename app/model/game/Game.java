@@ -2,37 +2,26 @@ package model.game;
 
 import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.LinkedList;
 
 import model.envelope.BoardEnvelope;
 import model.game.entities.Board;
 import model.game.entities.Color;
-import model.game.entities.Field;
 import model.game.entities.MovesBfs;
 
 public class Game {
 
-	private Board board;
 	private MovesBfs movesBfs;
 	private EnumMap<Color, Player> players;
-	private LinkedList<Field[][]> history;
-	private int sameStates;
+	private int movesMade;
+	private byte[][] fields;
 
 	public Game(Player whitePlayer, Player blackPlayer) {
-		board = new Board();
-		movesBfs = new MovesBfs(board, Color.WHITE);
+		Board board = new Board();
+		fields = board.toByteArray();
+		movesBfs = new MovesBfs(fields, Color.WHITE);
 		players = new EnumMap<>(Color.class);
 		players.put(Color.WHITE, whitePlayer);
 		players.put(Color.BLACK, blackPlayer);
-		history = new LinkedList<>();
-	}
-
-	public void setBoard(Board board) {
-		this.board = board;
-	}
-
-	public Board getBoard() {
-		return board;
 	}
 
 	public void updateBoard(BoardEnvelope envelope) {
@@ -40,12 +29,11 @@ public class Game {
 		movesBfs.generateNextStep();
 
 		for (MovesBfs nextMove : movesBfs.nextMoves) {
-			if (Arrays.deepEquals(envelope.fields, nextMove.board.fields)) {
-				board.setFields(nextMove.board.fields);
+			if (Arrays.deepEquals(envelope.fields, nextMove.fields)) {
+				fields = nextMove.fields;
 				movesBfs = nextMove;
 
 				checkHistoryForDraw();
-				addToHistory();
 
 				if (noMoreMoves()) {
 					throw new WinException(movesBfs.getActualColor().getOpposite());
@@ -57,18 +45,9 @@ public class Game {
 	}
 
 	private void checkHistoryForDraw() {
-		if (history.stream().anyMatch(fields -> Arrays.deepEquals(fields, board.fields))) {
-			sameStates++;
-			if (sameStates >= 15) {
-				throw new WinException(null);
-			}
-		}
-	}
-
-	private void addToHistory() {
-		history.addLast(board.fields);
-		if (history.size() > 15) {
-			history.removeFirst();
+		movesMade++;
+		if (movesMade >= 100) {
+			throw new WinException(null);
 		}
 	}
 
@@ -82,12 +61,9 @@ public class Game {
 	}
 
 	public void printFields() {
-		Field[][] fields = board.fields;
 		for (int i = 0; i < fields.length; i++) {
-			Field[] row = fields[i];
-			for (int j = 0; j < row.length; j++) {
-				Field field = row[j];
-				System.out.print(field);
+			for (int j = 0; j < fields[i].length; j++) {
+				System.out.print(fields[i][j]);
 			}
 			System.out.println();
 		}

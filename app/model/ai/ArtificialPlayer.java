@@ -24,7 +24,7 @@ public class ArtificialPlayer implements Player {
 		Double maxVal = Double.NEGATIVE_INFINITY;
 		MovesBfs bestMove = null;
 		for (MovesBfs move : game.getMovesBfs().nextMoves) {
-			Double evaluation = ai.evaluate(move.board);
+			Double evaluation = ai.evaluate(move.fields);
 			if (evaluation > maxVal) {
 				maxVal = evaluation;
 				bestMove = move;
@@ -34,7 +34,7 @@ public class ArtificialPlayer implements Player {
 			return;
 		}
 
-		BoardEnvelope envelope = new BoardEnvelope(bestMove.board.fields);
+		BoardEnvelope envelope = new BoardEnvelope(bestMove.fields);
 		game.updateBoard(envelope);
 	}
 
