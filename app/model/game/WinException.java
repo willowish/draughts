@@ -1,17 +1,15 @@
 package model.game;
 
-import model.game.entities.Color;
-
 public class WinException extends RuntimeException {
 	private static final long serialVersionUID = -3668164963003770568L;
-	private Color color;
+	private Player player;
 
-	public WinException(Color color) {
-		this.color = color;
+	public WinException(Player player) {
+		this.player = player;
 	}
 
-	public Color getWinningColor() {
-		return color;
+	public Player getWinningPlayer() {
+		return player;
 	}
 
 }

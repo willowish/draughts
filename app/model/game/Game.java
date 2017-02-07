@@ -36,7 +36,8 @@ public class Game {
 				checkHistoryForDraw();
 
 				if (noMoreMoves()) {
-					throw new WinException(movesBfs.getActualColor().getOpposite());
+					Color wonColor = movesBfs.getActualColor().getOpposite();
+					throw new WinException(players.get(wonColor));
 				}
 				return;
 			}

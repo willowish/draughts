@@ -89,9 +89,11 @@ public class MovesBfs {
 		for (int i = 0; i < fields.length; i++) {
 			for (int j = 0; j < fields[i].length; j++) {
 				byte piece = fields[i][j];
+
 				if (fields[i][j] == 0 || isOppositePlayersPiece(playerColor, i, j)) {
 					continue;
 				}
+
 				if (isPawn(piece)) {
 					for (int[] direction : allPossibleDirections) {
 						if (canAttack(playerColor, i, j, direction[0], direction[1])) {
@@ -99,7 +101,6 @@ public class MovesBfs {
 							attackPossible = true;
 						}
 					}
-
 				} else if (isQueen(i, j)) {
 					for (int[] direction : allPossibleDirections) {
 						for (int positionX = i, positionY = j; isCoordInBoard(positionX,

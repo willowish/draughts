@@ -42,7 +42,7 @@ public class OneGameStarter {
 		try {
 			game.start();
 		} catch (WinException w) {
-			System.out.println(w.getWinningColor());
+			System.out.println(w.getWinningPlayer());
 			game.printFields();
 		}
 

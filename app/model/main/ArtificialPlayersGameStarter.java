@@ -1,5 +1,11 @@
 package model.main;
 
+import static java.util.stream.Collectors.toList;
+import static model.genetics.Configuration.NUMBER_OF_BEST_NN_TO_RETAIN;
+import static model.genetics.Configuration.NUMBER_OF_RANDOMS_IN_NEW_POPULATION;
+import static model.genetics.Configuration.NUMBER_OF_TRANSMUTED;
+import static model.genetics.Configuration.POPULATION_SIZE;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,148 +15,161 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
 import model.ai.ArtificialInteligence;
 import model.ai.ArtificialPlayer;
 import model.ai.nn.NeuralNetwork;
 import model.game.Game;
 import model.game.WinException;
-import model.game.entities.Color;
 import model.genetics.Dna;
 import model.genetics.PopulationGenerator;
 
 public class ArtificialPlayersGameStarter {
 
-	private static final String file_path = "D:/smartDna";
+	private static final int ROUNDS_TO_PLAY = 10;
+	private static final String file_path = "D:/smartDna2";
 	private PopulationGenerator pg;
-	private List<NeuralNetwork> population;
-	private HashMap<NeuralNetwork, Integer> results;
+	private List<ArtificialPlayer> population;
+	private HashMap<ArtificialPlayer, Integer> results;
 
-	public static void main(String[] args) throws IOException {
-		// load smart
-		List<NeuralNetwork> smartPopulation = loadPopulation();
-
+	public static void main(String[] args) {
 		long time = System.currentTimeMillis();
-
-		ArtificialPlayersGameStarter artificialPlayersGameStarter = new ArtificialPlayersGameStarter();
-		if (smartPopulation != null) {
-			// artificialPlayersGameStarter.population = smartPopulation;
+		ArtificialPlayersGameStarter starter = new ArtificialPlayersGameStarter();
+		for (int i = 0; i < ROUNDS_TO_PLAY; i++) {
+			starter.startRound();
+			starter.nextGeneration();
+			System.out.println("gen " + i);
 		}
-		// try some iterations
-		for (int i = 0; i < 1; i++) {
-			artificialPlayersGameStarter.start();
-		}
-		// now try "smart" with random networks
-		smartPopulation = artificialPlayersGameStarter.population;
+		starter.startRound();
+		starter.savePopulation();
+		starter.printResults();
 
-		ArtificialPlayersGameStarter artificialPlayersGameStarter2 = new ArtificialPlayersGameStarter();
-		List<NeuralNetwork> dumbPopulation = new LinkedList<>();
-		dumbPopulation.addAll(artificialPlayersGameStarter2.population);
-		artificialPlayersGameStarter2.population.addAll(smartPopulation);
-		artificialPlayersGameStarter2.start();
-
-		int res = 0, res2 = 0;
-		// check results of smart nn's
-		for (NeuralNetwork nn : dumbPopulation) {
-			System.out.print(artificialPlayersGameStarter2.results.get(nn) + " ");
-			res += artificialPlayersGameStarter2.results.get(nn);
-		}
-		System.out.println();
-		for (NeuralNetwork nn : smartPopulation) {
-			System.out.print(artificialPlayersGameStarter2.results.get(nn) + " ");
-			res2 += artificialPlayersGameStarter2.results.get(nn);
-		}
-		System.out.println(res + ":" + res2);
-
-		System.out.println("Time: " + (System.currentTimeMillis() - time) + "ms");
-
-		// save smart
-		savePopulation(smartPopulation);
+		System.out.println(System.currentTimeMillis() - time);
 	}
 
-	private static void savePopulation(List<NeuralNetwork> smartPopulation) throws IOException, FileNotFoundException {
+	public void printResults() {
+		population.sort((p1, p2) -> results.get(p2) - results.get(p1));
+		population.forEach((player) -> {
+			System.out.println("Player " + player.hashCode() + " have " + results.get(player) + " points!");
+		});
+	}
+
+	public ArtificialPlayersGameStarter() {
+		results = new HashMap<>();
+		pg = new PopulationGenerator();
+
+		List<NeuralNetwork> populationNN = loadPopulation();
+		if (populationNN == null || populationNN.size() == 0) {
+			populationNN = pg.generateRandomPopulation(POPULATION_SIZE);
+		}
+
+		population = networkToPlayer(populationNN);
+		population.forEach(player -> results.put(player, 0));
+
+	}
+
+	public void savePopulation() {
+		savePopulation(playerToNetwork(population));
+
+	}
+
+	public void nextGeneration() {
+		population.sort((p1, p2) -> results.get(p2) - results.get(p1));
+		List<ArtificialPlayer> masters = population.subList(0, NUMBER_OF_BEST_NN_TO_RETAIN);
+		List<NeuralNetwork> transmuted = pg.generateNextGeneration(playerToNetwork(masters), NUMBER_OF_TRANSMUTED);
+		List<NeuralNetwork> randoms = pg.generateRandomPopulation(NUMBER_OF_RANDOMS_IN_NEW_POPULATION);
+		population = masters;
+		population.addAll(networkToPlayer(transmuted));
+		population.addAll(networkToPlayer(randoms));
+
+		results.clear();
+		population.forEach(player -> results.put(player, 0));
+	}
+
+	public void startRound() {
+		List<Game> gamesToPlay = new LinkedList<>();
+		for (int i = 0; i < population.size(); i++) {
+			// kazdy z kazdym tylko raz
+			for (int j = i + 1; j < population.size(); j++) {
+
+				ArtificialPlayer player1 = population.get(i);
+				ArtificialPlayer player2 = population.get(j);
+
+				gamesToPlay.add(new Game(player1, player2));
+
+			}
+		}
+
+		ForkJoinPool forkJoinPool = new ForkJoinPool();
+		forkJoinPool.submit(() -> {
+
+			gamesToPlay.parallelStream().forEach(game -> {
+				try {
+					game.start();
+				} catch (WinException w) {
+					synchronized (results) {
+						ArtificialPlayer winningPlayer = (ArtificialPlayer) w.getWinningPlayer();
+						results.put(winningPlayer, results.get(winningPlayer) + 1);
+					}
+				}
+			});
+		}).join();
+	}
+
+	private List<NeuralNetwork> playerToNetwork(List<ArtificialPlayer> population2) {
+		return population2.stream().map(player -> player.getAi().getNeuralNetwork()).collect(toList());
+	}
+
+	private List<ArtificialPlayer> networkToPlayer(List<NeuralNetwork> populationNN) {
+		return populationNN.stream().map(nn -> new ArtificialPlayer(new ArtificialInteligence(nn))).collect(toList());
+	}
+
+	private void savePopulation(List<NeuralNetwork> smartPopulation) {
 		File file;
 		file = new File(file_path);
 		if (file.exists()) {
 			file.delete();
 		}
-		file.createNewFile();
+		try {
+			file.createNewFile();
 
-		PrintWriter writer = new PrintWriter(file);
-		smartPopulation.forEach(bw -> {
-			writer.println(new Dna(bw).serialize());
-		});
-		writer.close();
+			PrintWriter writer = new PrintWriter(file);
+			smartPopulation.forEach(bw -> {
+				writer.println(new Dna(bw).serialize());
+			});
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	private static List<NeuralNetwork> loadPopulation() throws FileNotFoundException, IOException {
+	private List<NeuralNetwork> loadPopulation() {
 		List<NeuralNetwork> smartPopulation = null;
 		File file = new File(file_path);
 		if (file.exists()) {
 			smartPopulation = new LinkedList<>();
 
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			String str;
-			while ((str = reader.readLine()) != null) {
-				Dna dna = Dna.deserialize(str);
+			try {
+				BufferedReader reader = new BufferedReader(new FileReader(file));
+				String str;
+				while ((str = reader.readLine()) != null) {
+					Dna dna = Dna.deserialize(str);
 
-				NeuralNetwork newNetwork = new NeuralNetwork();
-				newNetwork.setBiases(dna.biases);
-				newNetwork.setWeights(dna.weights);
+					NeuralNetwork newNetwork = new NeuralNetwork();
+					newNetwork.setBiases(dna.biases);
+					newNetwork.setWeights(dna.weights);
 
-				smartPopulation.add(newNetwork);
+					smartPopulation.add(newNetwork);
+				}
+
+				reader.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-
-			reader.close();
 		}
 		return smartPopulation;
-	}
-
-	public ArtificialPlayersGameStarter() {
-		pg = new PopulationGenerator();
-		population = pg.generateRandomPopulation(25);
-
-	}
-
-	private void start() {
-		results = new HashMap<>();
-		population.forEach(nn -> results.put(nn, 0));
-
-		for (NeuralNetwork bw1 : population) {
-			ArtificialInteligence player1Inteligence = new ArtificialInteligence((NeuralNetwork) bw1);
-			ArtificialPlayer player1 = new ArtificialPlayer(player1Inteligence);
-			population.parallelStream().forEach((bw2) -> {
-				ArtificialInteligence player2Inteligence = new ArtificialInteligence((NeuralNetwork) bw1);
-				ArtificialPlayer player2 = new ArtificialPlayer(player2Inteligence);
-
-				Game game = new Game(player1, player2);
-				try {
-					game.start();
-				} catch (WinException w) {
-					NeuralNetwork winningPlayer = w.getWinningColor() == Color.WHITE ? bw1 : bw2;
-					results.put(winningPlayer, results.get(winningPlayer) + 1);
-				}
-			});
-		}
-		List<NeuralNetwork> sourcePopulation = new LinkedList<>();
-		results.forEach((nn, result) -> {
-			if (result > population.size() / 2 + population.size() / 4) {
-				sourcePopulation.add(nn);
-			}
-		});
-		if (sourcePopulation.size() < 5) {
-			results.forEach((nn, result) -> {
-				if (result >= population.size() / 2) {
-					sourcePopulation.add(nn);
-				}
-			});
-
-		}
-
-		population = pg.generateNextGeneration(sourcePopulation, 10);
-		population.addAll(pg.generateRandomPopulation(10));
-		population.addAll(sourcePopulation.subList(0, 5));
-		population.forEach(nn -> results.put(nn, 0));
-
 	}
 }
