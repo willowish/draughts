@@ -5,15 +5,13 @@ import model.ai.ArtificialPlayer;
 import model.ai.nn.NeuralNetwork;
 import model.game.Game;
 import model.game.WinException;
-import model.genetics.BiasedWeighted;
-import model.genetics.NeuralNetworkProvider;
 import model.genetics.PopulationGenerator;
 
 public class OneGameStarter {
 
 	private PopulationGenerator pg;
-	private BiasedWeighted player2nn;
-	private BiasedWeighted player1nn;
+	private NeuralNetwork player2nn;
+	private NeuralNetwork player1nn;
 
 	public static void main(String[] args) {
 		long time = System.currentTimeMillis();
@@ -25,7 +23,7 @@ public class OneGameStarter {
 	}
 
 	public OneGameStarter() {
-		pg = new PopulationGenerator(new NeuralNetworkProvider());
+		pg = new PopulationGenerator();
 		player1nn = pg.generateRandomPopulation(1).get(0);
 		player2nn = pg.generateRandomPopulation(1).get(0);
 

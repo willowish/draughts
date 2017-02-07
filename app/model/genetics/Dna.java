@@ -3,6 +3,8 @@ package model.genetics;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import model.ai.nn.NeuralNetwork;
+
 public class Dna {
 	public double[] biases;
 	public double[] weights;
@@ -12,7 +14,7 @@ public class Dna {
 		weights = new double[weightsCount];
 	}
 
-	public Dna(BiasedWeighted biasedWighted) {
+	public Dna(NeuralNetwork biasedWighted) {
 		biases = biasedWighted.getBiases();
 		weights = biasedWighted.getWeights();
 	}

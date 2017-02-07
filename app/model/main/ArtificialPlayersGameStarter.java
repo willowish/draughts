@@ -16,21 +16,19 @@ import model.ai.nn.NeuralNetwork;
 import model.game.Game;
 import model.game.WinException;
 import model.game.entities.Color;
-import model.genetics.BiasedWeighted;
 import model.genetics.Dna;
-import model.genetics.NeuralNetworkProvider;
 import model.genetics.PopulationGenerator;
 
 public class ArtificialPlayersGameStarter {
 
 	private static final String file_path = "D:/smartDna";
 	private PopulationGenerator pg;
-	private List<BiasedWeighted> population;
-	private HashMap<BiasedWeighted, Integer> results;
+	private List<NeuralNetwork> population;
+	private HashMap<NeuralNetwork, Integer> results;
 
 	public static void main(String[] args) throws IOException {
 		// load smart
-		List<BiasedWeighted> smartPopulation = loadPopulation();
+		List<NeuralNetwork> smartPopulation = loadPopulation();
 
 		long time = System.currentTimeMillis();
 
@@ -46,19 +44,19 @@ public class ArtificialPlayersGameStarter {
 		smartPopulation = artificialPlayersGameStarter.population;
 
 		ArtificialPlayersGameStarter artificialPlayersGameStarter2 = new ArtificialPlayersGameStarter();
-		List<BiasedWeighted> dumbPopulation = new LinkedList<>();
+		List<NeuralNetwork> dumbPopulation = new LinkedList<>();
 		dumbPopulation.addAll(artificialPlayersGameStarter2.population);
 		artificialPlayersGameStarter2.population.addAll(smartPopulation);
 		artificialPlayersGameStarter2.start();
 
 		int res = 0, res2 = 0;
 		// check results of smart nn's
-		for (BiasedWeighted nn : dumbPopulation) {
+		for (NeuralNetwork nn : dumbPopulation) {
 			System.out.print(artificialPlayersGameStarter2.results.get(nn) + " ");
 			res += artificialPlayersGameStarter2.results.get(nn);
 		}
 		System.out.println();
-		for (BiasedWeighted nn : smartPopulation) {
+		for (NeuralNetwork nn : smartPopulation) {
 			System.out.print(artificialPlayersGameStarter2.results.get(nn) + " ");
 			res2 += artificialPlayersGameStarter2.results.get(nn);
 		}
@@ -70,7 +68,7 @@ public class ArtificialPlayersGameStarter {
 		savePopulation(smartPopulation);
 	}
 
-	private static void savePopulation(List<BiasedWeighted> smartPopulation) throws IOException, FileNotFoundException {
+	private static void savePopulation(List<NeuralNetwork> smartPopulation) throws IOException, FileNotFoundException {
 		File file;
 		file = new File(file_path);
 		if (file.exists()) {
@@ -85,8 +83,8 @@ public class ArtificialPlayersGameStarter {
 		writer.close();
 	}
 
-	private static List<BiasedWeighted> loadPopulation() throws FileNotFoundException, IOException {
-		List<BiasedWeighted> smartPopulation = null;
+	private static List<NeuralNetwork> loadPopulation() throws FileNotFoundException, IOException {
+		List<NeuralNetwork> smartPopulation = null;
 		File file = new File(file_path);
 		if (file.exists()) {
 			smartPopulation = new LinkedList<>();
@@ -109,7 +107,7 @@ public class ArtificialPlayersGameStarter {
 	}
 
 	public ArtificialPlayersGameStarter() {
-		pg = new PopulationGenerator(new NeuralNetworkProvider());
+		pg = new PopulationGenerator();
 		population = pg.generateRandomPopulation(25);
 
 	}
@@ -118,7 +116,7 @@ public class ArtificialPlayersGameStarter {
 		results = new HashMap<>();
 		population.forEach(nn -> results.put(nn, 0));
 
-		for (BiasedWeighted bw1 : population) {
+		for (NeuralNetwork bw1 : population) {
 			ArtificialInteligence player1Inteligence = new ArtificialInteligence((NeuralNetwork) bw1);
 			ArtificialPlayer player1 = new ArtificialPlayer(player1Inteligence);
 			population.parallelStream().forEach((bw2) -> {
@@ -129,12 +127,12 @@ public class ArtificialPlayersGameStarter {
 				try {
 					game.start();
 				} catch (WinException w) {
-					BiasedWeighted winningPlayer = w.getWinningColor() == Color.WHITE ? bw1 : bw2;
+					NeuralNetwork winningPlayer = w.getWinningColor() == Color.WHITE ? bw1 : bw2;
 					results.put(winningPlayer, results.get(winningPlayer) + 1);
 				}
 			});
 		}
-		List<BiasedWeighted> sourcePopulation = new LinkedList<>();
+		List<NeuralNetwork> sourcePopulation = new LinkedList<>();
 		results.forEach((nn, result) -> {
 			if (result > population.size() / 2 + population.size() / 4) {
 				sourcePopulation.add(nn);

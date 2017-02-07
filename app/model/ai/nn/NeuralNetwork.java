@@ -2,9 +2,7 @@ package model.ai.nn;
 
 import static java.lang.Math.tanh;
 
-import model.genetics.BiasedWeighted;
-
-public class NeuralNetwork implements BiasedWeighted {
+public class NeuralNetwork {
 
 	public static final int nodesInInputLayer = 32;
 	public static final int nodesInFirstLayer = 40;
@@ -72,7 +70,6 @@ public class NeuralNetwork implements BiasedWeighted {
 		return outputNode;
 	}
 
-	@Override
 	public double[] getWeights() {
 		double[] weights = new double[nodesInInputLayer * nodesInFirstLayer + nodesInFirstLayer * nodesInSecondLayer
 				+ nodesInSecondLayer];
@@ -95,7 +92,6 @@ public class NeuralNetwork implements BiasedWeighted {
 		return weights;
 	}
 
-	@Override
 	public double[] getBiases() {
 		double[] biases = new double[nodesInFirstLayer + nodesInSecondLayer + 1];
 
@@ -110,7 +106,6 @@ public class NeuralNetwork implements BiasedWeighted {
 		return biases;
 	}
 
-	@Override
 	public void setWeights(double[] weights) {
 		if (weights.length != nodesInInputLayer * nodesInFirstLayer + nodesInFirstLayer * nodesInSecondLayer
 				+ nodesInSecondLayer) {
@@ -132,7 +127,6 @@ public class NeuralNetwork implements BiasedWeighted {
 		}
 	}
 
-	@Override
 	public void setBiases(double[] biases) {
 		if (biases.length != nodesInFirstLayer + nodesInSecondLayer + 1) {
 			throw new ArrayIndexOutOfBoundsException("Biases array length too small");

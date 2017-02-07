@@ -8,42 +8,43 @@ import static model.genetics.NeuronParametersGenerator.getRandomWeight;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.ai.nn.NeuralNetwork;
 import model.genetics.crossOver.CrossOverPerformer;
 import model.genetics.mutation.Mutator;
 
 public class PopulationGenerator {
 
-	private Provider<BiasedWeighted> networkProvider;
+	private CrossOverPerformer crossOverPerformer;
+	private Mutator mutator;
 
-	public PopulationGenerator(Provider<BiasedWeighted> networkProvider) {
-		this.networkProvider = networkProvider;
+	public PopulationGenerator() {
+		crossOverPerformer = new CrossOverPerformer();
+		mutator = new Mutator();
 	}
 
-	public List<BiasedWeighted> generateRandomPopulation(int populationSize) {
-		List<BiasedWeighted> population = new ArrayList<>(populationSize);
+	public List<NeuralNetwork> generateRandomPopulation(int populationSize) {
+		List<NeuralNetwork> population = new ArrayList<>(populationSize);
 
 		for (int i = 0; i < populationSize; i++) {
-			population.add(setRandomNetworkParameters(networkProvider.get()));
+			population.add(setRandomNetworkParameters(new NeuralNetwork()));
 		}
 
 		return population;
 	}
 
-	public List<BiasedWeighted> generateNextGeneration(List<BiasedWeighted> sourcePopulation) {
+	public List<NeuralNetwork> generateNextGeneration(List<NeuralNetwork> sourcePopulation) {
 		return generateNextGeneration(sourcePopulation, sourcePopulation.size());
 	}
 
-	public List<BiasedWeighted> generateNextGeneration(List<BiasedWeighted> sourcePopulation, int populationSize) {
-		CrossOverPerformer crossOverPerformer = new CrossOverPerformer(networkProvider);
-		Mutator mutator = new Mutator();
+	public List<NeuralNetwork> generateNextGeneration(List<NeuralNetwork> sourcePopulation, int populationSize) {
 
-		List<BiasedWeighted> newPopulation = crossOverPerformer.getNewCrossOver(sourcePopulation, populationSize);
+		List<NeuralNetwork> newPopulation = crossOverPerformer.getNewCrossOver(sourcePopulation, populationSize);
 		newPopulation = mutator.mutate(newPopulation);
 
 		return newPopulation;
 	}
 
-	private BiasedWeighted setRandomNetworkParameters(BiasedWeighted network) {
+	private NeuralNetwork setRandomNetworkParameters(NeuralNetwork network) {
 		double[] weights = new double[weightsCount];
 		for (int i = 0; i < weights.length; i++) {
 			weights[i] = getRandomWeight();
