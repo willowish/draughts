@@ -21,13 +21,13 @@ public class ArtificialInteligence implements IArtificialInteligence {
 	}
 
 	@Override
-	public double evaluate(byte[][] fields) {
+	public double evaluate(byte[][] fields, byte colorSign) {
 		double[] input = new double[nodesInInputLayer];
 		int idx = 0;
 
 		for (int i = 0; i < fields.length; i++) {
 			for (int j = 0; j < fields[i].length; j += 2) {
-				input[idx++] = fields[i][j];
+				input[idx++] = fields[i][j] * colorSign;
 			}
 		}
 		return nn.compute(input);

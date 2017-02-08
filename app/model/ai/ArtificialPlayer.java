@@ -28,7 +28,7 @@ public class ArtificialPlayer implements Player {
 		Double maxVal = Double.NEGATIVE_INFINITY;
 		MovesBfs bestMove = null;
 		for (MovesBfs move : game.getMovesBfs().nextMoves) {
-			Double evaluation = ai.evaluate(move.fields);
+			Double evaluation = ai.evaluate(move.fields, (byte) game.getMovesBfs().getActualColor().getValue());
 			if (evaluation > maxVal) {
 				maxVal = evaluation;
 				bestMove = move;

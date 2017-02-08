@@ -83,15 +83,15 @@ public class ArtificialPlayersGameStarter {
 		population.addAll(networkToPlayer(transmuted));
 		population.addAll(networkToPlayer(randoms));
 
-		results.clear();
-		population.forEach(player -> results.put(player, 0));
 	}
 
 	public void startRound() {
+		results.clear();
+		population.forEach(player -> results.put(player, 0));
+
 		List<Game> gamesToPlay = new LinkedList<>();
 		for (int i = 0; i < population.size(); i++) {
-			// kazdy z kazdym tylko raz
-			for (int j = i + 1; j < population.size(); j++) {
+			for (int j = 0; j < population.size(); j++) {
 
 				ArtificialPlayer player1 = population.get(i);
 				ArtificialPlayer player2 = population.get(j);

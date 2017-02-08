@@ -64,7 +64,29 @@ public class Game {
 	public void printFields() {
 		for (int i = 0; i < fields.length; i++) {
 			for (int j = 0; j < fields[i].length; j++) {
-				System.out.print(fields[i][j]);
+				byte piece = fields[i][j];
+				switch (piece) {
+				case 0: {
+					System.out.print(" ");
+					break;
+				}
+				case 1: {
+					System.out.print("O");
+					break;
+				}
+				case -1: {
+					System.out.print("X");
+					break;
+				}
+				case 2: {
+					System.out.print("B");
+					break;
+				}
+				case -2: {
+					System.out.print("R");
+					break;
+				}
+				}
 			}
 			System.out.println();
 		}

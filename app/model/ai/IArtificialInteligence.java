@@ -1,5 +1,5 @@
 package model.ai;
 
 public interface IArtificialInteligence {
-	public double evaluate(byte[][] fields);
+	public double evaluate(byte[][] fields, byte colorSign);
 }
